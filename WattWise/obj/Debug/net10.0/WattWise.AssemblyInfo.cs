@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WattWise")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40b37abcfe61f6a14f9ffbc0c33e099f3d97ce2e")]
 [assembly: System.Reflection.AssemblyProductAttribute("WattWise")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WattWise")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
