@@ -1,0 +1,130 @@
+@model MeterReadingSummaryViewModel
+@{ ViewData["Title"] = "Reading Details"; }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="fw-bold mb-0">📊 Reading Details</h2>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back to Readings</a>
+            @if (Model.ConnectionHasSolar)
+            {
+                <span class="badge bg-success align-self-center px-3 py-2">☀️ Solar Connection</span>
+            }
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <!-- Grid reading info -->
+            <div class="ww-card p-4 mb-3">
+                <h5 class="fw-semibold mb-3" style="color:#2563EB;">🔌 Grid Meter</h5>
+                <dl class="row mb-0">
+                    <dt class="col-6 text-muted">Consumer No.</dt>
+                    <dd class="col-6 fw-semibold">@Model.ConsumerNumber</dd>
+                    <dt class="col-6 text-muted">Connection Type</dt>
+                    <dd class="col-6">@Model.ConnectionType</dd>
+                    <dt class="col-6 text-muted">Reading Date</dt>
+                    <dd class="col-6">@Model.ReadingDate.ToLocalTime().ToString("dd MMM yyyy")</dd>
+                    <dt class="col-6 text-muted">Previous Import</dt>
+                    <dd class="col-6">@Model.PreviousReading.ToString("F2") kWh</dd>
+                    <dt class="col-6 text-muted">Current Import</dt>
+                    <dd class="col-6 fw-semibold">@Model.CurrentReading.ToString("F2") kWh</dd>
+                    <dt class="col-6 text-muted">Grid Consumed</dt>
+                    <dd class="col-6 fw-bold fs-5" style="color:#172033;">@Model.UnitsConsumed.ToString("F2") kWh</dd>
+                    <dt class="col-6 text-muted">Estimated Bill</dt>
+                    <dd class="col-6 fw-bold fs-5" style="color:#2563EB;">₹@Model.BillAmount.ToString("F2")</dd>
+                    <dt class="col-6 text-muted">Due Date</dt>
+                    <dd class="col-6 @(Model.DueDate.HasValue && Model.DueDate < DateTime.Now && !Model.IsPaid ? "text-danger" : "")">
+                        @(Model.DueDate.HasValue ? Model.DueDate.Value.ToLocalTime().ToString("dd MMM yyyy") : "—")
+                    </dd>
+                    <dt class="col-6 text-muted">Payment</dt>
+                    <dd class="col-6">
+                        <span class="badge @(Model.IsPaid ? "bg-success" : "bg-warning text-dark") fs-6">
+                            @(Model.IsPaid ? "✅ Paid" : "⏳ Pending")
+                        </span>
+                    </dd>
+                    @if (!string.IsNullOrEmpty(Model.Remarks))
+                    {
+                        <dt class="col-6 text-muted">Remarks</dt>
+                        <dd class="col-6">@Model.Remarks</dd>
+                    }
+                </dl>
+            </div>
+
+            <!-- Solar data (only when applicable) -->
+            @if (Model.ConnectionHasSolar)
+            {
+                <div class="ww-card p-4" style="border-color:#BBF7D0;background:#F0FDF4;">
+                    <h5 class="fw-semibold mb-3" style="color:#166534">☀️ Solar Summary</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-7 text-muted">Solar Generation</dt>
+                        <dd class="col-5 fw-semibold @(Model.SolarGenerationKwh.HasValue ? "" : "text-muted fst-italic")">
+                            @(Model.SolarGenerationKwh.HasValue ? Model.SolarGenerationKwh.Value.ToString("F2") + " kWh" : "Data unavailable")
+                        </dd>
+                        <dt class="col-7 text-muted">Grid Export</dt>
+                        <dd class="col-5 fw-semibold @(Model.GridExportKwh.HasValue ? "" : "text-muted fst-italic")">
+                            @(Model.GridExportKwh.HasValue ? Model.GridExportKwh.Value.ToString("F2") + " kWh" : "Data unavailable")
+                        </dd>
+                        <dt class="col-7 text-muted">Solar Self-Consumed</dt>
+                        <dd class="col-5 fw-semibold @(Model.SolarSelfConsumedKwh.HasValue ? "" : "text-muted fst-italic")">
+                            @if (Model.SolarSelfConsumedKwh.HasValue)
+                            {
+                                @(Model.SolarSelfConsumedKwh.Value.ToString("F2") + " kWh")
+                            }
+                            else
+                            {
+                                <span title="Battery present or generation/export data missing">Data unavailable</span>
+                            }
+                        </dd>
+                    </dl>
+                    <div class="form-text text-muted small mt-2">
+                        ⚠ Solar figures are calculated from your cumulative meter readings. Export credits are not included in the bill estimate.
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <div class="ww-card p-4">
+                <h5 class="fw-semibold mb-3">Actions</h5>
+                <div class="d-grid gap-2">
+                    @if (!Model.IsPaid)
+                    {
+                        <form asp-action="MarkPaid" asp-route-id="@Model.ReadingId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success w-100 py-2">✅ Mark Bill as Paid</button>
+                        </form>
+                    }
+                    <a asp-controller="MeterReadings" asp-action="Create"
+                       asp-route-connectionId="@Model.ConnectionId"
+                       class="btn ww-btn-primary py-2">+ Add Next Reading</a>
+                    <a asp-controller="Report" asp-action="Index"
+                       class="btn btn-outline-info py-2">📄 Export Monthly PDF</a>
+                    <a asp-controller="Connections" asp-action="Details"
+                       asp-route-id="@Model.ConnectionId"
+                       class="btn btn-outline-secondary py-2">🔌 View Connection</a>
+                    <form asp-action="Delete" asp-route-id="@Model.ReadingId" method="post"
+                          onsubmit="return confirm('Delete this reading? Only the most recent reading can be deleted.')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2">🗑️ Delete Reading</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="ww-card p-3 mt-3">
+                <h6 class="text-muted mb-2">ℹ️ Tariff Note</h6>
+                <p class="text-muted small mb-0">
+                    Bill is calculated using tiered tariff slabs. This is an <strong>estimate</strong> — actual bills may
+                    include taxes, fixed charges, and surcharges from your electricity board.
+                    @if (Model.ConnectionHasSolar)
+                    {
+                        <span>Solar export credits / net-metering adjustments are <strong>not</strong> reflected in this estimate.</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

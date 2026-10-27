@@ -1,0 +1,103 @@
+@model WattWise.ViewModels.HomeViewModel
+@{ ViewData["Title"] = "Home"; }
+
+<!-- Hero -->
+<section style="background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 60%, #EFF6FF 100%); padding: 5rem 0 4rem; border-bottom: 1px solid #E2E8F0;">
+    <div class="container text-center">
+        <span class="badge rounded-pill mb-3 px-3 py-2"
+              style="background:#EFF6FF;color:#2563EB;font-size:.85rem;border:1px solid #BFDBFE;font-weight:600;">
+            ⚡ Smart Energy Management
+        </span>
+        <h1 class="display-4 fw-bold mb-3" style="color:#172033;letter-spacing:-1px;">
+            Track Every <span style="color:#2563EB;">Watt</span> You Consume
+        </h1>
+        <p class="lead mb-4" style="color:#475569;max-width:620px;margin:auto;">
+            Monitor your electricity consumption, calculate bills instantly using tiered tariff slabs,
+            and make smarter energy decisions — all in one dashboard.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+            <a asp-controller="Account" asp-action="Register"
+               class="btn ww-btn-primary px-4 py-2 fw-semibold fs-6">
+                Get Started Free →
+            </a>
+            <a asp-controller="Account" asp-action="Login"
+               class="btn btn-outline-secondary px-4 py-2 fw-semibold fs-6">
+                Sign In
+            </a>
+        </div>
+        <!-- Stats strip -->
+        <div class="d-flex justify-content-center gap-5 flex-wrap" style="font-size:.9rem;color:#475569;">
+            <div><span class="fw-bold" style="color:#2563EB;font-size:1.5rem;">4</span><br>Tariff Slabs</div>
+            <div><span class="fw-bold" style="color:#16A34A;font-size:1.5rem;">∞</span><br>Connections</div>
+            <div><span class="fw-bold" style="color:#D97706;font-size:1.5rem;">₹0</span><br>Surprise Bills</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="py-5" style="background:#F8FAFC;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="ww-section-label">Why WattWise?</p>
+            <h2 class="fw-bold" style="color:#172033;">Everything you need to manage electricity</h2>
+        </div>
+        <div class="row g-4">
+            @foreach (var feature in Model.Features)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="ww-card p-4 h-100 text-center ww-feature-card">
+                        <div style="font-size:2.5rem;margin-bottom:.75rem;">@feature.Icon</div>
+                        <h5 class="fw-semibold mb-2" style="color:#172033;">@feature.Title</h5>
+                        <p class="mb-0" style="color:#475569;font-size:.9rem;">@feature.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="py-5" style="background:#FFFFFF;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="ww-section-label">Simple Process</p>
+            <h2 class="fw-bold" style="color:#172033;">Up and running in 3 steps</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            @foreach (var (num, title, desc) in new[]{
+                ("01","Register","Create an account and add your electricity connections with consumer number and load details."),
+                ("02","Enter Readings","Input your monthly meter readings. Bills are calculated automatically using the tariff slab engine."),
+                ("03","Analyse & Save","View usage trends, track payments, and make smarter energy decisions month after month.")
+            })
+            {
+                <div class="col-md-4">
+                    <div class="ww-card p-4 text-center ww-feature-card">
+                        <div class="fw-black mb-2" style="font-size:2.5rem;color:#BFDBFE;">@num</div>
+                        <h5 class="fw-semibold mb-2" style="color:#172033;">@title</h5>
+                        <p class="mb-0" style="color:#475569;font-size:.9rem;">@desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5" style="background:#F8FAFC;">
+    <div class="container">
+        <div class="ww-card p-5 text-center"
+             style="border-color:#BFDBFE;background:linear-gradient(135deg,#EFF6FF,#F8FAFC);">
+            <h2 class="fw-bold mb-3" style="color:#172033;">Ready to take control?</h2>
+            <p class="mb-4" style="color:#475569;">
+                Start tracking your electricity usage today. No complicated setup required.
+            </p>
+            <a asp-controller="Account" asp-action="Register"
+               class="btn ww-btn-primary px-5 py-2 fw-semibold fs-6">
+                Get Started Free
+            </a>
+        </div>
+    </div>
+</section>
+
+
+

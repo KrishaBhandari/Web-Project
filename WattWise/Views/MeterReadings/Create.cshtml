@@ -1,0 +1,144 @@
+@model MeterReadingCreateViewModel
+@{ ViewData["Title"] = "Add Meter Reading"; }
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="ww-card p-4 p-md-5">
+                <h2 class="fw-bold mb-1">📊 Add Meter Reading</h2>
+                <p class="text-muted mb-4">Enter meter readings to calculate consumption and estimated bill.</p>
+
+                @if (Model.PreviousReading.HasValue)
+                {
+                    <div class="alert alert-info py-2 mb-4">
+                        <strong>Previous grid reading:</strong> @Model.PreviousReading.Value.ToString("F2") kWh
+                        on @Model.PreviousReadingDate?.ToString("dd MMM yyyy")
+                    </div>
+                }
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label ww-label">Connection</label>
+                        <select asp-for="ConnectionId" asp-items="ViewBag.Connections"
+                                class="form-select ww-input"
+                                onchange="this.form.submit()">
+                        </select>
+                        <span asp-validation-for="ConnectionId" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ReadingDate" class="form-label ww-label"></label>
+                        <input asp-for="ReadingDate" type="date" class="form-control ww-input"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="ReadingDate" class="text-danger small"></span>
+                    </div>
+
+                    <!-- ── Grid Import Section ─────────────────────────────────────── -->
+                    <div class="ww-card p-3 mb-3" style="border-color:#BFDBFE;background:#EFF6FF;">
+                        <h6 class="fw-semibold mb-3" style="color:#1D4ED8">🔌 Grid Import Meter</h6>
+                        <div class="mb-0">
+                            <label asp-for="CurrentReading" class="form-label ww-label"></label>
+                            <div class="input-group">
+                                <input asp-for="CurrentReading" class="form-control ww-input"
+                                       placeholder="@(Model.PreviousReading.HasValue ? "Must be ≥ " + Model.PreviousReading.Value.ToString("F2") : "e.g. 1250.00")"
+                                       step="0.01" />
+                                <span class="input-group-text" >kWh</span>
+                            </div>
+                            <span asp-validation-for="CurrentReading" class="text-danger small"></span>
+                            @if (Model.PreviousReading.HasValue)
+                            {
+                                <div class="form-text text-muted">Previous reading: @Model.PreviousReading.Value.ToString("F2") kWh</div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- ── Solar Section (shown only when connection.HasSolar=true) ─── -->
+                    @if (Model.ConnectionHasSolar)
+                    {
+                        <div class="ww-card p-3 mb-3" style="border-color:#BBF7D0;background:#F0FDF4;">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span style="font-size:1.3rem">☀️</span>
+                                <h6 class="fw-semibold mb-0" style="color:#166534">Solar Meter Readings</h6>
+                                <span class="badge bg-success ms-1">Solar Connection</span>
+                            </div>
+
+                            @if (Model.ConnectionHasBattery)
+                            {
+                                <div class="alert alert-warning py-2 mb-3">
+                                    ⚠ Battery storage detected. Solar self-consumption cannot be calculated from generation and export readings alone
+                                    (battery charging/discharging is not accounted for). The individual generation and export figures will still be recorded.
+                                </div>
+                            }
+
+                            <p class="text-muted small mb-3">
+                                All solar fields are <strong>optional</strong>. Enter readings from the meters you have.
+                                Missing readings will show as "Data unavailable" in reports — values are never estimated.
+                            </p>
+
+                            <!-- Solar Generation Meter -->
+                            <div class="mb-3">
+                                <label class="form-label ww-label">☀️ Solar Generation Meter <span class="text-muted small">(optional)</span></label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-text text-muted">Previous cumulative (kWh)</label>
+                                        <input asp-for="PrevSolarGenReading" class="form-control ww-input" step="0.01"
+                                               placeholder="@(Model.PrevSolarGenReading.HasValue ? Model.PrevSolarGenReading.Value.ToString("F2") : "Previous cumulative")" />
+                                        <span asp-validation-for="PrevSolarGenReading" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-text text-muted">Current cumulative (kWh)</label>
+                                        <input asp-for="CurrSolarGenReading" class="form-control ww-input" step="0.01"
+                                               placeholder="Current reading" />
+                                        <span asp-validation-for="CurrSolarGenReading" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="form-text text-muted mt-1">Enter both previous and current readings from your solar generation meter.</div>
+                            </div>
+
+                            <!-- Grid Export Meter -->
+                            <div class="mb-0">
+                                <label class="form-label ww-label">🔋 Grid Export Meter <span class="text-muted small">(optional)</span></label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-text text-muted">Previous cumulative (kWh)</label>
+                                        <input asp-for="PrevGridExportReading" class="form-control ww-input" step="0.01"
+                                               placeholder="@(Model.PrevGridExportReading.HasValue ? Model.PrevGridExportReading.Value.ToString("F2") : "Previous cumulative")" />
+                                        <span asp-validation-for="PrevGridExportReading" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-text text-muted">Current cumulative (kWh)</label>
+                                        <input asp-for="CurrGridExportReading" class="form-control ww-input" step="0.01"
+                                               placeholder="Current reading" />
+                                        <span asp-validation-for="CurrGridExportReading" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="form-text text-muted mt-1">
+                                    Enter readings from your bidirectional/export meter. Leave blank if not available.
+                                    @if (!Model.ConnectionHasBattery)
+                                    {
+                                        <span>Export this period must not exceed solar generation this period.</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mb-4">
+                        <label asp-for="Remarks" class="form-label ww-label">Remarks (optional)</label>
+                        <textarea asp-for="Remarks" class="form-control ww-input" rows="2"
+                                  placeholder="Any notes about this reading..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn ww-btn-primary flex-grow-1 py-2">💾 Save Reading</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary py-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

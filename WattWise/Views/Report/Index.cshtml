@@ -1,0 +1,97 @@
+@model ReportRequestViewModel
+@{ ViewData["Title"] = "Export Monthly PDF Report"; }
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="ww-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div style="font-size:2.5rem">📄</div>
+                    <h2 class="fw-bold mt-2 mb-1">Export Monthly PDF Report</h2>
+                    <p class="text-muted small">
+                        Generates a downloadable PDF from your actual database records.
+                        Report includes grid consumption, estimated bill, and solar data (when applicable).
+                    </p>
+                </div>
+
+                @if (!Model.Connections.Any())
+                {
+                    <div class="alert alert-warning">
+                        No electricity connections found. <a asp-controller="Connections" asp-action="Create">Add a connection first.</a>
+                    </div>
+                }
+                else
+                {
+                    <form asp-action="Download" method="get">
+                        <div class="mb-3">
+                            <label class="form-label ww-label">Electricity Connection</label>
+                            <select name="connectionId" class="form-select ww-input" required>
+                                <option value="">— Select a connection —</option>
+                                @foreach (var conn in Model.Connections)
+                                {
+                                    if (conn.Id == Model.ConnectionId)
+                                    {
+                                        <option value="@conn.Id" selected>@conn.Label</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@conn.Id">@conn.Label</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-7">
+                                <label class="form-label ww-label">Month</label>
+                                <select name="month" class="form-select ww-input" required>
+                                    @for (int m = 1; m <= 12; m++)
+                                    {
+                                        if (m == Model.Month)
+                                        {
+                                            <option value="@m" selected>@(new DateTime(2000, m, 1).ToString("MMMM"))</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@m">@(new DateTime(2000, m, 1).ToString("MMMM"))</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label ww-label">Year</label>
+                                <select name="year" class="form-select ww-input" required>
+                                    @for (int y = DateTime.Today.Year; y >= DateTime.Today.Year - 5; y--)
+                                    {
+                                        if (y == Model.Year)
+                                        {
+                                            <option value="@y" selected>@y</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@y">@y</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning py-2 mb-4">
+                            ⚠ Bills shown in the PDF are <strong>estimates</strong> based on configured tariff slabs and are not official utility bills.
+                        </div>
+
+                        <button type="submit" class="btn ww-btn-primary w-100 py-2 fw-semibold">
+                            ⬇️ Download PDF Report
+                        </button>
+                    </form>
+                }
+
+                <div class="mt-3 text-center">
+                    <a asp-controller="Dashboard" asp-action="Index" class="ww-link small">← Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

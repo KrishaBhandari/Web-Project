@@ -1,0 +1,158 @@
+@model ConnectionDetailViewModel
+@{ ViewData["Title"] = "Connection Details"; }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <h2 class="fw-bold mb-0">🔌 @Model.ConsumerNumber</h2>
+            @if (Model.HasSolar)
+            {
+                <span class="badge px-3 py-2" style="background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;">☀️ Solar</span>
+            }
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-action="Edit" asp-route-id="@Model.ConnectionId" class="btn btn-outline-secondary btn-sm">✏️ Edit</a>
+            <a asp-controller="MeterReadings" asp-action="Create" asp-route-connectionId="@Model.ConnectionId"
+               class="btn ww-btn-primary btn-sm">+ Add Reading</a>
+            <a asp-controller="Report" asp-action="Index" class="btn btn-outline-info btn-sm">📄 Export PDF</a>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Connection Info card -->
+        <div class="col-md-5">
+            <div class="ww-card p-4 mb-3">
+                <h5 class="fw-semibold mb-3" style="color:#2563EB;">Connection Info</h5>
+                <dl class="row mb-0">
+                    <dt class="col-5 text-muted">Consumer No.</dt>
+                    <dd class="col-7 fw-semibold">@Model.ConsumerNumber</dd>
+                    <dt class="col-5 text-muted">Type</dt>
+                    <dd class="col-7">@Model.ConnectionType</dd>
+                    <dt class="col-5 text-muted">Address</dt>
+                    <dd class="col-7">@Model.Address</dd>
+                    <dt class="col-5 text-muted">Load</dt>
+                    <dd class="col-7">@Model.SanctionedLoad kW</dd>
+                    <dt class="col-5 text-muted">Connected On</dt>
+                    <dd class="col-7">@Model.ConnectedOn.ToLocalTime().ToString("dd MMM yyyy")</dd>
+                    <dt class="col-5 text-muted">Status</dt>
+                    <dd class="col-7">
+                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                            @(Model.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+
+            @if (Model.HasSolar)
+            {
+                <!-- Solar Config card -->
+                <div class="ww-card p-4" style="border-color:#BBF7D0;background:#F0FDF4;">
+                    <h5 class="fw-semibold mb-3" style="color:#166534">☀️ Solar Configuration</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-6 text-muted">Capacity</dt>
+                        <dd class="col-6 fw-semibold">
+                            @(Model.SolarCapacityKw.HasValue ? Model.SolarCapacityKw.Value.ToString("F2") + " kWp" : "Not specified")
+                        </dd>
+                        <dt class="col-6 text-muted">Battery Storage</dt>
+                        <dd class="col-6">
+                            @if (Model.HasBattery)
+                            {
+                                <span class="badge" style="background:#DCFCE7;color:#166534;">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">No</span>
+                            }
+                        </dd>
+                        @if (Model.HasBattery)
+                        {
+                            <dt class="col-12 text-muted small mt-2 pt-1" style="border-top:1px solid #E2E8F0">
+                                ⚠ Battery present — solar self-consumption cannot be accurately calculated from meter readings alone.
+                            </dt>
+                        }
+                    </dl>
+                </div>
+            }
+        </div>
+
+        <!-- Right column: stats + recent readings -->
+        <div class="col-md-7">
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <div class="ww-stat-card">
+                        <div class="ww-stat-icon">⚡</div>
+                        <div class="ww-stat-value">@(Model.LatestUnitsConsumed.HasValue ? Model.LatestUnitsConsumed.Value.ToString("F2") : "—")</div>
+                        <div class="ww-stat-label">Latest Grid Units (kWh)</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="ww-stat-card ww-stat-card--warning">
+                        <div class="ww-stat-icon">💰</div>
+                        <div class="ww-stat-value">@(Model.EstimatedBill.HasValue ? "₹" + Model.EstimatedBill.Value.ToString("F2") : "—")</div>
+                        <div class="ww-stat-label">Latest Bill (Estimate)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent readings table -->
+            <div class="ww-card p-3">
+                <h6 class="fw-semibold mb-3 text-muted">Recent Readings</h6>
+                @if (!Model.RecentReadings.Any())
+                {
+                    <p class="text-muted text-center py-3">
+                        No readings yet.
+                        <a asp-controller="MeterReadings" asp-action="Create" asp-route-connectionId="@Model.ConnectionId" class="ww-link">Add one now</a>
+                    </p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Grid Units</th>
+                                    <th>Bill</th>
+                                    @if (Model.HasSolar) { <th>Solar Gen.</th> }
+                                    <th>Paid</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.RecentReadings)
+                                {
+                                    <tr>
+                                        <td class="text-muted small">@r.ReadingDate.ToString("dd MMM yyyy")</td>
+                                        <td>@r.UnitsConsumed.ToString("F2")</td>
+                                        <td>₹@r.BillAmount.ToString("F2")</td>
+                                        @if (Model.HasSolar)
+                                        {
+                                            <td class="small">
+                                                @(r.SolarGenerationKwh.HasValue
+                                                    ? r.SolarGenerationKwh.Value.ToString("F2") + " kWh"
+                                                    : "—")
+                                            </td>
+                                        }
+                                        <td><span class="badge @(r.IsPaid ? "bg-success" : "bg-warning text-dark")">@(r.IsPaid ? "Paid" : "Due")</span></td>
+                                        <td>
+                                            <a asp-controller="MeterReadings" asp-action="Details"
+                                               asp-route-id="@r.ReadingId" class="btn btn-sm btn-outline-info py-0 px-2">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="MeterReadings" asp-action="Index" asp-route-connectionId="@Model.ConnectionId"
+                           class="btn btn-outline-secondary btn-sm">View All Readings →</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

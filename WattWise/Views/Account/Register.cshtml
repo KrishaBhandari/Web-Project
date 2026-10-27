@@ -1,0 +1,58 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Register"; }
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="ww-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="ww-brand-icon-lg">⚡</div>
+                    <h2 class="fw-bold mt-2">Create Account</h2>
+                    <p class="text-muted">Join WattWise to track your electricity usage</p>
+                </div>
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label ww-label"></label>
+                        <input asp-for="FullName" class="form-control ww-input" placeholder="John Doe" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label ww-label"></label>
+                        <input asp-for="Email" class="form-control ww-input" placeholder="you@email.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label ww-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control ww-input" placeholder="9876543210" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label ww-label"></label>
+                        <input asp-for="Password" class="form-control ww-input" placeholder="Minimum 8 characters" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label ww-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control ww-input" placeholder="Repeat password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn ww-btn-primary w-100 py-2 fw-semibold">
+                        Create Account
+                    </button>
+                </form>
+
+                <p class="text-center mt-4 mb-0 text-muted">
+                    Already have an account?
+                    <a asp-controller="Account" asp-action="Login" class="ww-link">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

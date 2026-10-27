@@ -1,0 +1,107 @@
+@model ConnectionEditViewModel
+@{ ViewData["Title"] = "Edit Connection"; }
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="ww-card p-4 p-md-5">
+                <h2 class="fw-bold mb-1">✏️ Edit Connection</h2>
+                <p class="text-muted mb-4">Update details for this electricity connection.</p>
+
+                <form asp-action="Edit" asp-route-id="@Model.ConnectionId" method="post">
+                    <input type="hidden" asp-for="ConnectionId" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ConsumerNumber" class="form-label ww-label"></label>
+                        <input asp-for="ConsumerNumber" class="form-control ww-input" />
+                        <span asp-validation-for="ConsumerNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConnectionType" class="form-label ww-label"></label>
+                        <select asp-for="ConnectionType" class="form-select ww-input">
+                            <option value="Domestic">Domestic</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Industrial">Industrial</option>
+                            <option value="Agricultural">Agricultural</option>
+                        </select>
+                        <span asp-validation-for="ConnectionType" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label ww-label"></label>
+                        <input asp-for="Address" class="form-control ww-input" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SanctionedLoad" class="form-label ww-label"></label>
+                        <div class="input-group">
+                            <input asp-for="SanctionedLoad" class="form-control ww-input" step="0.1" />
+                            <span class="input-group-text" >kW</span>
+                        </div>
+                        <span asp-validation-for="SanctionedLoad" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label text-muted">Connection is active</label>
+                    </div>
+
+                    <!-- ── Solar Section ─────────────────────────────────────────────── -->
+                    <div class="ww-card p-3 mb-4" style="border-color:#BBF7D0;background:#F0FDF4;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span style="font-size:1.3rem">☀️</span>
+                            <h6 class="fw-bold mb-0" style="color:#166534">Solar Installation</h6>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label ww-label">Does this property have a solar installation?</label>
+                            <div class="d-flex gap-4 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="HasSolar" id="solarNo"
+                                           value="false" @(!Model.HasSolar ? "checked" : "") onchange="toggleSolar(false)" />
+                                    <label class="form-check-label text-muted" for="solarNo">No</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="HasSolar" id="solarYes"
+                                           value="true" @(Model.HasSolar ? "checked" : "") onchange="toggleSolar(true)" />
+                                    <label class="form-check-label" for="solarYes" style="color:#166534">Yes</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="solarFields" style="display:@(Model.HasSolar ? "block" : "none")">
+                            <div class="mb-3">
+                                <label asp-for="SolarCapacityKw" class="form-label ww-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="SolarCapacityKw" class="form-control ww-input" step="0.001" />
+                                    <span class="input-group-text" >kWp</span>
+                                </div>
+                                <span asp-validation-for="SolarCapacityKw" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-2">
+                                <div class="form-check">
+                                    <input asp-for="HasBattery" class="form-check-input" />
+                                    <label asp-for="HasBattery" class="form-check-label text-muted">This property has battery storage</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn ww-btn-primary flex-grow-1 py-2">Save Changes</button>
+                        <a asp-action="Details" asp-route-id="@Model.ConnectionId" class="btn btn-outline-secondary py-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function toggleSolar(hasSolar) {
+    document.getElementById('solarFields').style.display = hasSolar ? 'block' : 'none';
+}
+</script>
+}
+
+
+

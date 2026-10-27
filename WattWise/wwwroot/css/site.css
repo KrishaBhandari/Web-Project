@@ -1,0 +1,394 @@
+/* ================================================================
+   WattWise — Global Design System  (Light Theme)
+   Clean electricity-management dashboard palette
+   ================================================================ */
+
+:root {
+    /* ── Backgrounds ──────────────────────────────────────────── */
+    --ww-bg:        #F8FAFC;   /* page background — very light blue-gray     */
+    --ww-bg-card:   #FFFFFF;   /* card / form / panel surfaces               */
+    --ww-bg-input:  #FFFFFF;   /* input field backgrounds                    */
+    --ww-bg-nav:    #FFFFFF;   /* navbar                                     */
+
+    /* ── Text ─────────────────────────────────────────────────── */
+    --ww-text:      #172033;   /* primary text — dark navy                   */
+    --ww-muted:     #475569;   /* secondary / muted text — slate gray        */
+    --ww-placeholder: #64748B; /* input placeholder                          */
+
+    /* ── Borders & Dividers ───────────────────────────────────── */
+    --ww-border:    #D1D5DB;   /* default border — light gray                */
+
+    /* ── Brand Accents ────────────────────────────────────────── */
+    --ww-blue:      #2563EB;   /* primary action color                       */
+    --ww-blue-dark: #1D4ED8;   /* button hover                               */
+    --ww-blue-pale: #EFF6FF;   /* light blue tint for highlights             */
+    --ww-amber:     #D97706;   /* secondary accent — amber (readable on light)*/
+    --ww-green:     #16A34A;   /* success text                               */
+    --ww-green-pale:#F0FDF4;   /* success background                         */
+    --ww-red:       #DC2626;   /* danger text                                */
+    --ww-red-pale:  #FEF2F2;   /* danger background                          */
+
+    /* ── Surfaces ─────────────────────────────────────────────── */
+    --ww-radius:    12px;
+    --ww-shadow:    0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+    --ww-shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* ── Base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--ww-bg);
+    color: var(--ww-text);
+    scroll-behavior: smooth;
+}
+
+body { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1; }
+
+a { color: var(--ww-blue); text-decoration: none; }
+a:hover { color: var(--ww-blue-dark); text-decoration: underline; }
+
+/* ── Navbar ───────────────────────────────────────────────────── */
+.ww-navbar {
+    background: var(--ww-bg-nav);
+    border-bottom: 1px solid var(--ww-border);
+    padding: 0.6rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    box-shadow: var(--ww-shadow-sm);
+}
+
+.ww-brand {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--ww-blue) !important;
+    letter-spacing: -0.5px;
+    text-decoration: none !important;
+}
+
+.ww-brand:hover { color: var(--ww-blue-dark) !important; }
+
+.navbar-nav .nav-link {
+    color: var(--ww-muted) !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    transition: color 0.18s, background 0.18s;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--ww-blue) !important;
+    background: var(--ww-blue-pale);
+}
+
+/* User name chip */
+.ww-nav-user {
+    color: var(--ww-muted) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.ww-btn-primary {
+    background: var(--ww-blue);
+    color: #fff !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+    text-decoration: none !important;
+}
+
+.ww-btn-primary:hover {
+    background: var(--ww-blue-dark);
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    transform: translateY(-1px);
+}
+
+.ww-btn-primary:focus {
+    outline: 3px solid rgba(37,99,235,0.3);
+    outline-offset: 2px;
+}
+
+/* Outline buttons — adapt to light theme */
+.btn-outline-secondary {
+    color: var(--ww-muted);
+    border-color: var(--ww-border);
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: #F1F5F9;
+    color: var(--ww-text);
+    border-color: #94A3B8;
+}
+
+.btn-outline-info {
+    color: #0369A1;
+    border-color: #BAE6FD;
+    background: transparent;
+}
+
+.btn-outline-info:hover {
+    background: #F0F9FF;
+    color: #0369A1;
+    border-color: #7DD3FC;
+}
+
+.btn-outline-warning {
+    color: var(--ww-amber);
+    border-color: #FDE68A;
+    background: transparent;
+}
+
+.btn-outline-warning:hover {
+    background: #FFFBEB;
+    color: #B45309;
+    border-color: #F59E0B;
+}
+
+.btn-outline-danger {
+    color: var(--ww-red);
+    border-color: #FECACA;
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--ww-red-pale);
+    color: #991B1B;
+    border-color: #FCA5A5;
+}
+
+/* ── Cards ────────────────────────────────────────────────────── */
+.ww-card {
+    background: var(--ww-bg-card);
+    border: 1px solid var(--ww-border);
+    border-radius: var(--ww-radius);
+    box-shadow: var(--ww-shadow);
+}
+
+/* ── Stat Cards ───────────────────────────────────────────────── */
+.ww-stat-card {
+    background: var(--ww-bg-card);
+    border: 1px solid var(--ww-border);
+    border-radius: var(--ww-radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: var(--ww-shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ww-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+
+.ww-stat-card--highlight { border-color: #FDE68A; background: #FFFBEB; }
+.ww-stat-card--warning   { border-color: #BBF7D0; background: #F0FDF4; }
+
+.ww-stat-icon  { font-size: 1.9rem; margin-bottom: 0.5rem; }
+.ww-stat-value { font-size: 1.7rem; font-weight: 800; color: var(--ww-text); line-height: 1; }
+.ww-stat-label { font-size: 0.78rem; color: var(--ww-muted); margin-top: 0.35rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ── Form Controls ────────────────────────────────────────────── */
+.ww-input,
+.ww-input.form-control,
+.ww-input.form-select {
+    background: var(--ww-bg-input) !important;
+    border: 1.5px solid var(--ww-border) !important;
+    color: var(--ww-text) !important;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.ww-input:focus,
+.ww-input.form-control:focus,
+.ww-input.form-select:focus {
+    border-color: var(--ww-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+    outline: none;
+    background: #FAFCFF !important;
+}
+
+.ww-input::placeholder { color: var(--ww-placeholder) !important; opacity: 1 !important; }
+
+.ww-label {
+    color: var(--ww-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+/* ── Input group ──────────────────────────────────────────────── */
+.input-group-text {
+    background: #F8FAFC;
+    border-color: var(--ww-border);
+    color: var(--ww-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Form check (radio / checkbox) ──────────────────────────── */
+.form-check-input {
+    background-color: var(--ww-bg-input);
+    border-color: #94A3B8;
+}
+
+.form-check-input:checked {
+    background-color: var(--ww-blue);
+    border-color: var(--ww-blue);
+}
+
+.form-check-label { color: var(--ww-text); }
+
+/* ── Tables ───────────────────────────────────────────────────── */
+/* Override Bootstrap dark tables to light theme */
+.table-dark,
+.table-dark > :not(caption) > * > * {
+    --bs-table-bg: var(--ww-bg-card);
+    --bs-table-striped-bg: #F8FAFC;
+    --bs-table-hover-bg: var(--ww-blue-pale);
+    --bs-table-border-color: var(--ww-border);
+    --bs-table-color: var(--ww-text);
+    color: var(--ww-text);
+    background-color: var(--ww-bg-card);
+    border-color: var(--ww-border);
+}
+
+.table-dark th {
+    color: var(--ww-muted);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--ww-border);
+    background: #F8FAFC;
+}
+
+.table-dark td {
+    color: var(--ww-text);
+    border-color: #E2E8F0;
+    vertical-align: middle;
+}
+
+.table-dark tbody tr:hover td {
+    background: var(--ww-blue-pale);
+}
+
+/* Striped rows */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: #F8FAFC;
+    color: var(--ww-text);
+}
+
+/* ── Badges ───────────────────────────────────────────────────── */
+.badge.bg-success  { background: #DCFCE7 !important; color: #166534 !important; }
+.badge.bg-warning  { background: #FEF9C3 !important; color: #854D0E !important; }
+.badge.bg-danger   { background: var(--ww-red-pale) !important; color: #991B1B !important; }
+.badge.bg-secondary{ background: #F1F5F9 !important; color: var(--ww-muted) !important; }
+.badge.bg-info     { background: #E0F2FE !important; color: #0C4A6E !important; }
+/* Keep text-dark for warning badge readable */
+.badge.bg-warning.text-dark { color: #854D0E !important; }
+
+/* ── Alerts ───────────────────────────────────────────────────── */
+.alert { border-radius: 10px; font-weight: 500; }
+
+.alert-success {
+    background: var(--ww-green-pale);
+    border-color: #BBF7D0;
+    color: #14532D;
+}
+
+.alert-warning {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+    color: #78350F;
+}
+
+.alert-danger {
+    background: var(--ww-red-pale);
+    border-color: #FECACA;
+    color: #7F1D1D;
+}
+
+.alert-info {
+    background: #F0F9FF;
+    border-color: #BAE6FD;
+    color: #0C4A6E;
+}
+
+/* ── Pagination ───────────────────────────────────────────────── */
+.page-link {
+    background: var(--ww-bg-card);
+    border-color: var(--ww-border);
+    color: var(--ww-muted);
+}
+
+.page-link:hover { background: var(--ww-blue-pale); color: var(--ww-blue); border-color: var(--ww-blue); }
+.page-item.active .page-link { background: var(--ww-blue); border-color: var(--ww-blue); color: #fff; }
+
+/* ── Links ────────────────────────────────────────────────────── */
+.ww-link { color: var(--ww-blue); font-weight: 500; }
+.ww-link:hover { color: var(--ww-blue-dark); }
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.ww-footer {
+    background: #F1F5F9;
+    border-top: 1px solid var(--ww-border);
+}
+
+.ww-footer-brand   { font-weight: 800; color: var(--ww-blue); font-size: 1.1rem; }
+.ww-footer-tagline { color: var(--ww-muted); font-size: 0.8rem; margin-top: 0.25rem; }
+.ww-footer-copy    { color: var(--ww-muted); font-size: 0.8rem; }
+
+/* ── Brand animation ──────────────────────────────────────────── */
+.ww-brand-icon-lg {
+    font-size: 3rem;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.08); }
+}
+
+/* ── Section dividers / visual helpers ────────────────────────── */
+.ww-section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ww-blue);
+    margin-bottom: 0.5rem;
+}
+
+/* ── Solar panel card accent ──────────────────────────────────── */
+.ww-solar-card {
+    border-color: #BBF7D0 !important;
+    background: #F0FDF4 !important;
+}
+
+/* ── Hover lift on feature cards ─────────────────────────────── */
+.ww-feature-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ww-feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .ww-stat-value { font-size: 1.4rem; }
+    .ww-stat-card  { padding: 1rem 0.75rem; }
+}

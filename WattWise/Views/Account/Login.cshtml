@@ -1,0 +1,47 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Login"; }
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-lg-4">
+            <div class="ww-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="ww-brand-icon-lg">⚡</div>
+                    <h2 class="fw-bold mt-2">Welcome Back</h2>
+                    <p class="text-muted">Sign in to your WattWise account</p>
+                </div>
+
+                <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label ww-label"></label>
+                        <input asp-for="Email" class="form-control ww-input" placeholder="you@email.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label ww-label"></label>
+                        <input asp-for="Password" class="form-control ww-input" placeholder="Your password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label text-muted">Remember me for 7 days</label>
+                    </div>
+
+                    <button type="submit" class="btn ww-btn-primary w-100 py-2 fw-semibold">
+                        Sign In
+                    </button>
+                </form>
+
+                <p class="text-center mt-4 mb-0 text-muted">
+                    New to WattWise?
+                    <a asp-controller="Account" asp-action="Register" class="ww-link">Create an account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

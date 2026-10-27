@@ -1,0 +1,249 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="container-fluid px-4 mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="fw-bold mb-0" style="color:#172033;">⚡ Dashboard</h1>
+            <p style="color:#475569;" class="mb-0">Welcome back, <strong style="color:#2563EB;">@Model.UserName</strong></p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-controller="Connections" asp-action="Create" class="btn ww-btn-primary">
+                + Add Connection
+            </a>
+            <a asp-controller="MeterReadings" asp-action="Create" class="btn btn-outline-secondary">
+                + Add Reading
+            </a>
+            <a asp-controller="Report" asp-action="Index" class="btn btn-outline-info">
+                📄 Export PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- High consumption warning -->
+    @if (Model.HighConsumptionWarning)
+    {
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+            <span style="font-size:1.5rem;">⚠️</span>
+            <div>
+                <strong>High Consumption Alert!</strong>
+                This month's usage (@Model.TotalUnitsThisMonth.ToString("F1") kWh) exceeds your threshold of @Model.HighConsumptionThreshold kWh.
+            </div>
+        </div>
+    }
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="ww-stat-card">
+                <div class="ww-stat-icon">🔌</div>
+                <div class="ww-stat-value">@Model.TotalConnections</div>
+                <div class="ww-stat-label">Total Connections</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="ww-stat-card">
+                <div class="ww-stat-icon">✅</div>
+                <div class="ww-stat-value">@Model.ActiveConnections</div>
+                <div class="ww-stat-label">Active Connections</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="ww-stat-card ww-stat-card--highlight">
+                <div class="ww-stat-icon">⚡</div>
+                <div class="ww-stat-value">@Model.TotalUnitsThisMonth.ToString("F1")</div>
+                <div class="ww-stat-label">Units This Month (kWh)</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="ww-stat-card ww-stat-card--warning">
+                <div class="ww-stat-icon">💰</div>
+                <div class="ww-stat-value">₹@Model.EstimatedBillThisMonth.ToString("F0")</div>
+                <div class="ww-stat-label">Estimated Bill</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Month comparison -->
+    <div class="ww-card p-3 mb-4">
+        <h6 class="mb-3" style="color:#475569;font-weight:600;">📊 Month-over-Month Comparison</h6>
+        <div class="row text-center g-3">
+            <div class="col-6 col-md-3">
+                <div style="color:#475569;font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;">Last Month Units</div>
+                <div class="fw-bold fs-5" style="color:#172033;">@Model.TotalUnitsLastMonth.ToString("F1") kWh</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div style="color:#475569;font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;">This Month Units</div>
+                <div class="fw-bold fs-5" style="color:@(Model.TotalUnitsThisMonth > Model.TotalUnitsLastMonth ? "#DC2626" : "#16A34A");">
+                    @Model.TotalUnitsThisMonth.ToString("F1") kWh
+                    @if (Model.TotalUnitsLastMonth > 0)
+                    {
+                        var change = (Model.TotalUnitsThisMonth - Model.TotalUnitsLastMonth) / Model.TotalUnitsLastMonth * 100;
+                        <span class="small">(@(change >= 0 ? "+" : "")@change.ToString("F1")%)</span>
+                    }
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div style="color:#475569;font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;">Last Month Bill</div>
+                <div class="fw-bold fs-5" style="color:#172033;">₹@Model.EstimatedBillLastMonth.ToString("F0")</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div style="color:#475569;font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;">This Month Bill</div>
+                <div class="fw-bold fs-5" style="color:@(Model.EstimatedBillThisMonth > Model.EstimatedBillLastMonth ? "#DC2626" : "#16A34A");">
+                    ₹@Model.EstimatedBillThisMonth.ToString("F0")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consumption Chart -->
+    @if (Model.MonthlyConsumption.Any())
+    {
+        <div class="ww-card p-4 mb-4">
+            <h5 class="fw-semibold mb-3" style="color:#172033;">📈 Monthly Consumption (Last 6 Months)</h5>
+            <canvas id="consumptionChart" style="max-height:280px;"></canvas>
+        </div>
+    }
+
+    <!-- Connections table -->
+    <div class="ww-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-semibold mb-0" style="color:#172033;">🔌 Your Connections</h5>
+            <a asp-controller="Connections" asp-action="Index" class="btn btn-outline-secondary btn-sm">View All</a>
+        </div>
+        @if (!Model.ConnectionSummaries.Any())
+        {
+            <div class="text-center py-5" style="color:#475569;">
+                <div style="font-size:3rem;">🔌</div>
+                <h5 class="mt-2" style="color:#172033;">No connections yet</h5>
+                <p>Add your first electricity connection to start tracking.</p>
+                <a asp-controller="Connections" asp-action="Create" class="btn ww-btn-primary">Add Connection</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Consumer No.</th>
+                            <th>Type</th>
+                            <th>Address</th>
+                            <th>Latest Units</th>
+                            <th>Latest Bill</th>
+                            <th>Last Reading</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.ConnectionSummaries)
+                        {
+                            <tr>
+                                <td class="fw-semibold" style="color:#2563EB;">@c.ConsumerNumber</td>
+                                <td>@c.ConnectionType</td>
+                                <td style="color:#475569;font-size:.9rem;">@c.Address</td>
+                                <td>@(c.LatestUnits.HasValue ? c.LatestUnits.Value.ToString("F2") + " kWh" : "—")</td>
+                                <td>@(c.LatestBill.HasValue ? "₹" + c.LatestBill.Value.ToString("F2") : "—")</td>
+                                <td style="color:#475569;font-size:.9rem;">@(c.LatestReadingDate.HasValue ? c.LatestReadingDate.Value.ToString("dd MMM yyyy") : "No readings")</td>
+                                <td>
+                                    <span class="badge @(c.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(c.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Connections" asp-action="Details" asp-route-id="@c.ConnectionId"
+                                       class="btn btn-sm btn-outline-info me-1">View</a>
+                                    <a asp-controller="MeterReadings" asp-action="Create" asp-route-connectionId="@c.ConnectionId"
+                                       class="btn btn-sm btn-outline-secondary">+ Reading</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @if (Model.MonthlyConsumption.Any())
+    {
+        <script>
+            const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyConsumption.Select(m => m.Month)));
+            const units  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyConsumption.Select(m => m.Units)));
+            const bills  = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyConsumption.Select(m => m.Bill)));
+
+            Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+            Chart.defaults.color = '#475569';
+
+            new Chart(document.getElementById('consumptionChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Units (kWh)',
+                            data: units,
+                            borderColor: '#2563EB',
+                            backgroundColor: 'rgba(37,99,235,0.08)',
+                            pointBackgroundColor: '#2563EB',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Bill (₹)',
+                            data: bills,
+                            borderColor: '#D97706',
+                            backgroundColor: 'rgba(217,119,6,0.07)',
+                            pointBackgroundColor: '#D97706',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#475569', font: { weight: '600' } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#FFFFFF',
+                            titleColor: '#172033',
+                            bodyColor: '#475569',
+                            borderColor: '#D1D5DB',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#475569' },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y: {
+                            ticks: { color: '#2563EB' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            position: 'left',
+                            title: { display: true, text: 'kWh', color: '#2563EB', font: { weight: '600' } }
+                        },
+                        y1: {
+                            ticks: { color: '#D97706' },
+                            grid: { drawOnChartArea: false },
+                            position: 'right',
+                            title: { display: true, text: '₹', color: '#D97706', font: { weight: '600' } }
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+}
+
+
+
